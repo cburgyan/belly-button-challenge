@@ -6,9 +6,10 @@ const dataPromise = d3.json(url);
 
 
 function plotPersonsBarData(person_id, sortedOTUsBySampleValue){
-    let sample_values = sortedOTUsBySampleValue.map(otu_record => otu_record.sample_value).slice(0,10);
-    let otu_ids = sortedOTUsBySampleValue.map(otu_record => otu_record.otu_ids).slice(0,10).map(item => 'OTU '.concat(item.toString()));
-    let otu_labels = sortedOTUsBySampleValue.map(otu_record => otu_record.otu_labels).slice(0,10);
+    let sample_values = sortedOTUsBySampleValue.sample_values.slice(0,10).reverse();
+    console.log(`sortedOTUsBySampleValue.otu_labels[0]: ${sortedOTUsBySampleValue.otu_labels[0]}`);
+    let otu_ids = sortedOTUsBySampleValue.otu_ids.slice(0,10).map(item => 'OTU '.concat(item.toString())).reverse();
+    let otu_labels = sortedOTUsBySampleValue.otu_labels.slice(0,10).reverse();
     let trace = {
         x: sample_values,
         y: otu_ids,
@@ -17,11 +18,19 @@ function plotPersonsBarData(person_id, sortedOTUsBySampleValue){
         orientation: 'h'
     };
 
+    let marginSize = 800;
+
     let layout ={
         title: `${person_id}'s Operational Taxonomic Units (OTU) Profile`,
         margins:{
-            
-        }
+            l: marginSize,
+            r: marginSize,
+            t: marginSize,
+            b: marginSize
+        },
+
+        height: 600,
+        width: 800
     };
 
     Plotly.newPlot('bar', [trace], layout);
@@ -61,17 +70,47 @@ dataPromise.then(function(data){
                 'otu_id': otu_ids[i],
                 'otu_label': otu_labels[i]
             };
+            // console.log(`sample_values[i]: ${sample_values[i]}`);
+            // console.log(`otu_ids[i]: ${otu_ids[i]}`);
+            // console.log(`otu_labels[i]: ${otu_labels[i]}`);
+            // break;
 
-            listDict.append(dict);
+            listDict.push(dict);
         }
+        // console.log(`listDict[0].sample_value: ${listDict[0].sample_value}`);
+        // console.log(`listDict[0].otu_id: ${listDict[0].otu_id}`);
+        // console.log(`listDict[0].otu_label: ${listDict[0].otu_label}`);
         return listDict;
     }
+    
+    
+    function unbindUTORecords(sortedListOfDicts){
+        let sample_values = [];
+        let otu_ids = [];
+        let otu_labels = [];
+
+        for (let i = 0; i < sortedListOfDicts.length; i++){
+            sample_values.push(sortedListOfDicts[i].sample_value);
+            otu_ids.push(sortedListOfDicts[i].otu_id);
+            otu_labels.push(sortedListOfDicts[i].otu_label);
+        }
+
+        return {'sample_values': sample_values, 'otu_ids':otu_ids,'otu_labels':otu_labels};
+    }
+
 
     function sortOTUPopulationsBySampleValue(sample_values, otu_ids, otu_labels){
 
         let listOfDicts = bindSampleValues_Otu_ids_Otu_labels(sample_values, otu_ids, otu_labels);
-        let sortedListOfDicts = listOfDicts.sort((firstOTU, secondOTU) => secondOTU - firstOTU);
+        let sortedListOfDicts = listOfDicts.sort((firstOTU, secondOTU) => secondOTU.sample_value - firstOTU.sample_value);
+        
+        // console.log(`sortedListOfDicts[0].sample_value: ${sortedListOfDicts[0].sample_value}`);
+        // console.log(`sortedListOfDicts[0].otu_id: ${sortedListOfDicts[0].otu_id}`);
+        // console.log(`sortedListOfDicts[0].otu_label: ${sortedListOfDicts[0].otu_label}`);
         let unbindedUTORecords = unbindUTORecords(sortedListOfDicts);
+        console.log(`unbindedUTORecords.sample_values[0]: ${unbindedUTORecords.sample_values[0]}`);
+        console.log(`unbindedUTORecords.otu_ids[0]: ${unbindedUTORecords.otu_ids[0]}`);
+        console.log(`unbindedUTORecords.otu_labels[0]: ${unbindedUTORecords.otu_labels[0]}`);
         return unbindedUTORecords;
     }
 
@@ -92,6 +131,20 @@ dataPromise.then(function(data){
         let sortedOTUsBySampleValue = sortOTUPopulationsBySampleValue(sample_values, otu_ids, otu_labels);
         plotPersonsBarData(person_id, sortedOTUsBySampleValue);
     }
+
+
+    function initialize(data){
+
+        let sample_values = data.samples[0].sample_values;
+        let otu_ids = data.samples[0].otu_ids;
+        let otu_labels = data.samples[0].otu_labels;
+
+
+        let sortedOTUsBySampleValue = sortOTUPopulationsBySampleValue(sample_values, otu_ids, otu_labels);
+        plotPersonsBarData(data.samples[0].id, sortedOTUsBySampleValue);
+    }
+
+    initialize(data);
 
     dropDownMenu.on('change', createBarChart, data);
 });
