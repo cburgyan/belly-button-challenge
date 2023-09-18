@@ -27,14 +27,6 @@ function plotPersonsBarData(person_id, sortedOTUsBySampleValue){
 
     let layout ={
         title: `${person_id}'s Operational Taxonomic Units (OTU) Profile`,
-        // margins:{
-        //     l: marginSize,
-        //     r: marginSize,
-        //     t: marginSize,
-        //     b: marginSize
-        // },
-
-        // height: numOfSampleValues * 50,
         width: 800
     };
 
@@ -60,8 +52,6 @@ function plotPersonsBubbleChart(person_id, sortedOTUsBySampleValue){
             color: otu_ids,
             size: sample_values
         }
-        // orientation: 'h',
-        // width: .8
     };
 
     console.log(`sample_values.length: ${sample_values.length}`)
@@ -74,15 +64,7 @@ function plotPersonsBubbleChart(person_id, sortedOTUsBySampleValue){
                 text: 'OTU'
             }
         },
-        // margins:{
-        //     l: marginSize,
-        //     r: marginSize,
-        //     t: marginSize,
-        //     b: marginSize
-        // },
-
-        // height: numOfSampleValues * 50,
-        width: 800
+        // width: 800
     };
 
     Plotly.newPlot('bubble', [trace], layout);
@@ -143,8 +125,20 @@ function sortOTUPopulationsBySampleValue(sample_values, otu_ids, otu_labels){
 }
 
 
+function loadPersonsDemographicData(person_index1){
+    d3.select('#demoId').text(`id: ${data.names[person_index1]}`);
+    d3.select('#demoEthnicity').text(`ethnicity: ${data.metadata[person_index1].ethnicity}`);
+    d3.select('#demoGender').text(`gender: ${data.metadata[person_index1].gender}`);
+    d3.select('#demoAge').text(`age: ${data.metadata[person_index1].age}`);
+    d3.select('#demoLocation').text(`location: ${data.metadata[person_index1].location}`);
+    d3.select('#demoBbtype').text(`bbtype: ${data.metadata[person_index1].bbtype}`);
+    d3.select('#demoWfreq').text(`wfreq: ${data.metadata[person_index1].wfreq}`);
+}
+
+
 function optionChanged(person_index){
     if (data != null){
+        loadPersonsDemographicData(person_index);
         // console.log('hi');
         // console.log(`data1.names for 100th person: ${data.names[100]}`);
         // console.log('----------');
@@ -172,19 +166,39 @@ dataPromise.then(function(data1){
     console.log(`data.names for 100th person: ${data1.names[100]}`);
     console.log(`data.samples for 100th person: ${data1.samples[100].otu_labels[0]}`);
     console.log(`data.metadata for 100th person: ${data1.metadata[100].age}`);
-    
-    // Populate the the html Select Tag for the dropdown menu with person_ids as
-    // the 'text' of the html-option-tag and corresponding index for the person's
-    // record data as the 'value' for the html-option-tag.
-    let dropDownMenu = d3.select('#selDataset');
-    for (let i = 0; i < data1.names.length; i++){
-        let option1 = dropDownMenu.append('option').text(data1.names[i]);
-        option1.attr('value', i);
-    }
 
 
     function initialize(data){
+    
+        // Populate the the html Select Tag for the dropdown menu with person_ids as
+        // the 'text' of the html-option-tag and corresponding index for the person's
+        // record data as the 'value' for the html-option-tag.
+        let dropDownMenu = d3.select('#selDataset');
+        for (let i = 0; i < data1.names.length; i++){
+            let option1 = dropDownMenu.append('option').text(data1.names[i]);
+            option1.attr('value', i);
+        }
 
+        // Populate 'Demographic Info'
+        let demographicDiv = d3.select('#sample-metadata');
+        let idDemo = demographicDiv.append('p').text(`id: ${data1.names[0]}`);
+        idDemo.attr('id','demoId');
+        idDemo = demographicDiv.append('p').text(`ethnicity: ${data1.metadata[0].ethnicity}`);
+        idDemo.attr('id','demoEthnicity');
+        idDemo = demographicDiv.append('p').text(`gender: ${data1.metadata[0].gender}`);
+        idDemo.attr('id','demoGender');
+        idDemo = demographicDiv.append('p').text(`age: ${data1.metadata[0].age}`);
+        idDemo.attr('id','demoAge');
+        idDemo = demographicDiv.append('p').text(`location: ${data1.metadata[0].location}`);
+        idDemo.attr('id','demoLocation');
+        idDemo = demographicDiv.append('p').text(`bbtype: ${data1.metadata[0].bbtype}`);
+        idDemo.attr('id','demoBbtype');
+        idDemo = demographicDiv.append('p').text(`wfreq: ${data1.metadata[0].wfreq}`);
+        idDemo.attr('id','demoWfreq');
+
+
+
+        // Create initial bar chart and bubble chart
         let sample_values = data.samples[0].sample_values;
         let otu_ids = data.samples[0].otu_ids;
         let otu_labels = data.samples[0].otu_labels;
@@ -192,7 +206,9 @@ dataPromise.then(function(data1){
 
         let sortedOTUsBySampleValue = sortOTUPopulationsBySampleValue(sample_values, otu_ids, otu_labels);
         plotPersonsBarData(data.samples[0].id, sortedOTUsBySampleValue);
-        plotPersonsBubbleChart(data.samples[0].id, sortedOTUsBySampleValue)
+        plotPersonsBubbleChart(data.samples[0].id, sortedOTUsBySampleValue);
+
+
     }
 
     initialize(data1);
