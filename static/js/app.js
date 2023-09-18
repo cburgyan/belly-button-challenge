@@ -4,6 +4,11 @@ const url = 'https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/
 const dataPromise = d3.json(url);
 
 
+let person_index;
+
+function optionChanged(person_index1){
+    person_index = person_index1;
+}
 
 function plotPersonsBarData(person_id, sortedOTUsBySampleValue){
     let sample_values = sortedOTUsBySampleValue.sample_values.slice(0,10).reverse();
@@ -146,7 +151,7 @@ dataPromise.then(function(data){
 
     initialize(data);
 
-    dropDownMenu.on('change', createBarChart, data);
+    dropDownMenu.on('change', createBarChart);
 });
 
 
