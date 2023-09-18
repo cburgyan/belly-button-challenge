@@ -70,7 +70,9 @@ dataPromise.then(function(data){
     function sortOTUPopulationsBySampleValue(sample_values, otu_ids, otu_labels){
 
         let listOfDicts = bindSampleValues_Otu_ids_Otu_labels(sample_values, otu_ids, otu_labels);
-        return listOfDicts.sort((firstOTU, secondOTU) => secondOTU - firstOTU);
+        let sortedListOfDicts = listOfDicts.sort((firstOTU, secondOTU) => secondOTU - firstOTU);
+        let unbindedUTORecords = unbindUTORecords(sortedListOfDicts);
+        return unbindedUTORecords;
     }
 
     function createBarChart(){
