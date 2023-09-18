@@ -5,19 +5,24 @@ const dataPromise = d3.json(url);
 
 let data = null;
 
+
 function plotPersonsBarData(person_id, sortedOTUsBySampleValue){
     let sample_values = sortedOTUsBySampleValue.sample_values.slice(0,10).reverse();
     console.log(`sortedOTUsBySampleValue.otu_labels[0]: ${sortedOTUsBySampleValue.otu_labels[0]}`);
     let otu_ids = sortedOTUsBySampleValue.otu_ids.slice(0,10).map(item => 'OTU '.concat(item.toString())).reverse();
     let otu_labels = sortedOTUsBySampleValue.otu_labels.slice(0,10).reverse();
+
+    let numOfSampleValues = sample_values.length;
     let trace = {
         x: sample_values,
         y: otu_ids,
         text: otu_labels,
         type: 'bar',
-        orientation: 'h'
+        orientation: 'h',
+        width: .8
     };
 
+    console.log(`sample_values.length: ${sample_values.length}`)
     let marginSize = 800;
 
     let layout ={
@@ -29,13 +34,61 @@ function plotPersonsBarData(person_id, sortedOTUsBySampleValue){
         //     b: marginSize
         // },
 
-        height: 600,
+        // height: numOfSampleValues * 50,
         width: 800
     };
 
     Plotly.newPlot('bar', [trace], layout);
 
 }
+
+
+function plotPersonsBubbleChart(person_id, sortedOTUsBySampleValue){
+    let sample_values = sortedOTUsBySampleValue.sample_values;
+    console.log(`sortedOTUsBySampleValue.otu_labels[0]qq: ${sortedOTUsBySampleValue.otu_labels[0]}`);
+    let otu_ids = sortedOTUsBySampleValue.otu_ids;
+    let otu_labels = sortedOTUsBySampleValue.otu_labels;
+
+    let numOfSampleValues = sample_values.length;
+    let trace = {
+        x: otu_ids,
+        y: sample_values,
+        text: otu_labels,
+        type: 'scatter',
+        mode: 'markers',
+        marker: {
+            color: otu_ids,
+            size: sample_values
+        }
+        // orientation: 'h',
+        // width: .8
+    };
+
+    console.log(`sample_values.length: ${sample_values.length}`)
+    let marginSize = 800;
+
+    let layout ={
+        title: `${person_id}'s Operational Taxonomic Units (OTU) Profile`,
+        xaxis: {
+            title:{
+                text: 'OTU'
+            }
+        },
+        // margins:{
+        //     l: marginSize,
+        //     r: marginSize,
+        //     t: marginSize,
+        //     b: marginSize
+        // },
+
+        // height: numOfSampleValues * 50,
+        width: 800
+    };
+
+    Plotly.newPlot('bubble', [trace], layout);
+
+}
+
 
 function bindSampleValues_Otu_ids_Otu_labels(sample_values, otu_ids, otu_labels){
     let listDict = [];
@@ -92,11 +145,11 @@ function sortOTUPopulationsBySampleValue(sample_values, otu_ids, otu_labels){
 
 function optionChanged(person_index){
     if (data != null){
-        console.log('hi');
-        console.log(`data1.names for 100th person: ${data.names[100]}`);
-        console.log('----------');
+        // console.log('hi');
+        // console.log(`data1.names for 100th person: ${data.names[100]}`);
+        // console.log('----------');
         let person_id = data.samples[person_index].id;
-        console.log(`person_id: ${person_id}`);
+        // console.log(`person_id: ${person_id}`);
         // console.log(`data1.samples[person_index]: ${data1.samples[person_index]}`);
 
         let sample_values = data.samples[person_index].sample_values;
@@ -104,20 +157,25 @@ function optionChanged(person_index){
         let otu_labels = data.samples[person_index].otu_labels;
         let sortedOTUsBySampleValue = sortOTUPopulationsBySampleValue(sample_values, otu_ids, otu_labels);
         plotPersonsBarData(person_id, sortedOTUsBySampleValue);
+        console.log('hi3');
+        plotPersonsBubbleChart(person_id, sortedOTUsBySampleValue);
     }
 }
 
 
 dataPromise.then(function(data1){
+
+    // Make a deep copy of the data ('data1') retrieved in the PromiseResults of 
+    // .json(url) result ('dataPromise').
     data = structuredClone(data1);
     console.log(data1);
     console.log(`data.names for 100th person: ${data1.names[100]}`);
     console.log(`data.samples for 100th person: ${data1.samples[100].otu_labels[0]}`);
     console.log(`data.metadata for 100th person: ${data1.metadata[100].age}`);
     
-    // Populate the the html Select Tag for the dropdown menu with person ids
-    // and corresponding index for each person's "value" for the html option
-    // tag that is created.
+    // Populate the the html Select Tag for the dropdown menu with person_ids as
+    // the 'text' of the html-option-tag and corresponding index for the person's
+    // record data as the 'value' for the html-option-tag.
     let dropDownMenu = d3.select('#selDataset');
     for (let i = 0; i < data1.names.length; i++){
         let option1 = dropDownMenu.append('option').text(data1.names[i]);
@@ -134,6 +192,7 @@ dataPromise.then(function(data1){
 
         let sortedOTUsBySampleValue = sortOTUPopulationsBySampleValue(sample_values, otu_ids, otu_labels);
         plotPersonsBarData(data.samples[0].id, sortedOTUsBySampleValue);
+        plotPersonsBubbleChart(data.samples[0].id, sortedOTUsBySampleValue)
     }
 
     initialize(data1);
