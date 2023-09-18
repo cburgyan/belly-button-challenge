@@ -49,7 +49,9 @@ function plotPersonsBubbleChart(person_id, sortedOTUsBySampleValue){
         type: 'scatter',
         mode: 'markers',
         marker: {
-            color: otu_ids,
+            // NOTE: the rgb function along with dividing the otu_id by a factor of 1, 2, or 3 was done to make the 
+            // bubble chart more colorful.
+            color: otu_ids.map(item => `rgb(${item % 256}, ${Math.floor(item / 2) % 256}, ${Math.floor(item / 3) % 256})`),
             size: sample_values
         }
     };
@@ -80,16 +82,9 @@ function bindSampleValues_Otu_ids_Otu_labels(sample_values, otu_ids, otu_labels)
             'otu_id': otu_ids[i],
             'otu_label': otu_labels[i]
         };
-        // console.log(`sample_values[i]: ${sample_values[i]}`);
-        // console.log(`otu_ids[i]: ${otu_ids[i]}`);
-        // console.log(`otu_labels[i]: ${otu_labels[i]}`);
-        // break;
 
         listDict.push(dict);
     }
-    // console.log(`listDict[0].sample_value: ${listDict[0].sample_value}`);
-    // console.log(`listDict[0].otu_id: ${listDict[0].otu_id}`);
-    // console.log(`listDict[0].otu_label: ${listDict[0].otu_label}`);
     return listDict;
 }
 
@@ -110,22 +105,27 @@ function unbindUTORecords(sortedListOfDicts){
 
 
 function sortOTUPopulationsBySampleValue(sample_values, otu_ids, otu_labels){
-
+    // In order to keep the otu_id, its (the otu's) corresponding otu_label, and (the otu's) its corresponding 
+    // sample_value together during the sorting of the sample_values, they have to be bound together before the
+    // the sort.
     let listOfDicts = bindSampleValues_Otu_ids_Otu_labels(sample_values, otu_ids, otu_labels);
+
+    // Sorting the bounded otu records by sample_value size.
     let sortedListOfDicts = listOfDicts.sort((firstOTU, secondOTU) => secondOTU.sample_value - firstOTU.sample_value);
     
-    // console.log(`sortedListOfDicts[0].sample_value: ${sortedListOfDicts[0].sample_value}`);
-    // console.log(`sortedListOfDicts[0].otu_id: ${sortedListOfDicts[0].otu_id}`);
-    // console.log(`sortedListOfDicts[0].otu_label: ${sortedListOfDicts[0].otu_label}`);
-    let unbindedUTORecords = unbindUTORecords(sortedListOfDicts);
-    console.log(`unbindedUTORecords.sample_values[0]: ${unbindedUTORecords.sample_values[0]}`);
-    console.log(`unbindedUTORecords.otu_ids[0]: ${unbindedUTORecords.otu_ids[0]}`);
-    console.log(`unbindedUTORecords.otu_labels[0]: ${unbindedUTORecords.otu_labels[0]}`);
-    return unbindedUTORecords;
+    // Unbinding the otu records.
+    let unboundUTORecords = unbindUTORecords(sortedListOfDicts);
+
+    // // Quick sanity check printout of results.
+    // console.log(`unboundUTORecords.sample_values[0]: ${unboundUTORecords.sample_values[0]}`);
+    // console.log(`unboundUTORecords.otu_ids[0]: ${unboundUTORecords.otu_ids[0]}`);
+    // console.log(`unboundUTORecords.otu_labels[0]: ${unboundUTORecords.otu_labels[0]}`);
+    return unboundUTORecords;
 }
 
 
 function loadPersonsDemographicData(person_index1){
+    // Grab each demographic field by its corresponding html tag id and update its 'text'
     d3.select('#demoId').text(`id: ${data.names[person_index1]}`);
     d3.select('#demoEthnicity').text(`ethnicity: ${data.metadata[person_index1].ethnicity}`);
     d3.select('#demoGender').text(`gender: ${data.metadata[person_index1].gender}`);
@@ -162,10 +162,12 @@ dataPromise.then(function(data1){
     // Make a deep copy of the data ('data1') retrieved in the PromiseResults of 
     // .json(url) result ('dataPromise').
     data = structuredClone(data1);
-    console.log(data1);
-    console.log(`data.names for 100th person: ${data1.names[100]}`);
-    console.log(`data.samples for 100th person: ${data1.samples[100].otu_labels[0]}`);
-    console.log(`data.metadata for 100th person: ${data1.metadata[100].age}`);
+    
+    // // Quick printout-sanity-check
+    // console.log(data1);
+    // console.log(`data.names for 100th person: ${data1.names[100]}`);
+    // console.log(`data.samples for 100th person: ${data1.samples[100].otu_labels[0]}`);
+    // console.log(`data.metadata for 100th person: ${data1.metadata[100].age}`);
 
 
     function initialize(data){
