@@ -30,7 +30,7 @@ function plotPersonsBarData(person_id, sortedOTUsBySampleValue){
 
     let layout ={
         title: `${person_id}'s Operational Taxonomic Units (OTUs) Profile`,
-        width: 800,
+        width: 450,
         xaxis: {
             title:{
                 text: 'OTU Population'
@@ -92,45 +92,7 @@ function plotPersonsBubbleChart(person_id, sortedOTUsBySampleValue){
 
 
 
-function plotPersonsGaugeWashFrequency(person_index1){
-    let washFrequency = data.metadata[person_index1].wfreq;
-    let colorStep = 25;
-    let trace = 
-    {
-        domain: { x: [0, 1], y: [0, 1] },
-        value: washFrequency,
-        title: { text: "Scrubs per Week" },
-        type: "indicator",
-        mode: "gauge",
-        guage: {
-            axis: { range: [null, 9]},
-            //     ticks: 'inside', 
-            //     showticklabels: false },
-            // bar: { color: "darkblue" },
-            // bgcolor: "brown",
-            // borderwidth: 2,
-            // bordercolor: "gray",
-            steps: [
-                { range: [0, 1], color: `rgb(${colorStep * 1}, 255, ${colorStep * 1})`},
-                { range: [1, 2], color: `rgb(${colorStep * 2}, 255, ${colorStep * 2})`},
-                { range: [2, 3], color: `rgb(${colorStep * 3}, 255, ${colorStep * 3})`},
-                { range: [3, 4], color: `rgb(${colorStep * 4}, 255, ${colorStep * 4})`},
-                { range: [4, 5], color: `rgb(${colorStep * 5}, 255, ${colorStep * 5})`},
-                { range: [5, 6], color: `rgb(${colorStep * 6}, 255, ${colorStep * 6})`},
-                { range: [6, 7], color: `rgb(${colorStep * 7}, 255, ${colorStep * 7})`},
-                { range: [7, 8], color: `rgb(${colorStep * 8}, 255, ${colorStep * 8})`},
-                { range: [8, 9], color: `rgb(${colorStep * 9}, 255, ${colorStep * 9})` }
-              ]
-        }
-    };
 
-    let data1 = [trace];
-
-    let layout = {};// width: 600, height: 450, margin: { t: 100, b: 100 } };
-
-    Plotly.newPlot('gauge', data1, layout);
-
-}
 
 
 // Function to pack up each OTU's id (an element of 'otu_ids'), sample value (an element of 
@@ -214,7 +176,6 @@ function optionChanged(person_index){
         loadPersonsDemographicData(person_index);
         let sortedOTUsBySampleValue = sortOTUPopulationsBySampleValue(sample_values, otu_ids, otu_labels);
         plotPersonsBarData(person_id, sortedOTUsBySampleValue);
-        console.log('hi3');
         plotPersonsBubbleChart(person_id, sortedOTUsBySampleValue);
         plotPersonsGaugeWashFrequency(person_index);
     }
@@ -268,6 +229,13 @@ dataPromise.then(function(data1){
         idDemo = demographicDiv.append('p').text(`wfreq: ${data1.metadata[0].wfreq}`);
         idDemo.attr('id','demoWfreq');
 
+
+        // Create canvas html tag to draw gauge on (NOTE: Plotly was NOT used for this gauge)
+        let gaugeDiv = d3.select('#gauge')
+        let canvasTag = gaugeDiv.append('canvas');
+        canvasTag.attr('id', 'gaugeCanvas');
+        canvasTag.attr('width', '400');
+        canvasTag.attr('height','200');
 
 
         // Create initial bar chart and bubble chart for the initially listed person id in the
