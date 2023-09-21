@@ -2,7 +2,7 @@ function plotPersonsGaugeWashFrequency(person_index1){
     //Get wash frequency from data
     let washFrequency = data.metadata[person_index1].wfreq;
 
-    // Draw gauge WITHOUT needle (drawing the needle comes later)
+    
     // Set constant values for defining gauge such as location, radians per step, angle offsets,
     // rgb color variations, and number of steps (9) that will be in gauge.
     const gaugeX = 150;
@@ -22,6 +22,7 @@ function plotPersonsGaugeWashFrequency(person_index1){
     // Clear canvas of previous person's data
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    //--------------------------------
     // Draw Gauge without needle
     const labelShiftX = -8;
     const labelShiftY = 5;
@@ -39,16 +40,10 @@ function plotPersonsGaugeWashFrequency(person_index1){
             (gaugeX + labelShiftX) + gaugeRadius * Math.cos(Math.PI + i * radiansPerStep + angleOffset), 
             (gaugeY + labelShiftY) +  gaugeRadius*Math.sin(Math.PI + i * radiansPerStep + angleOffset));
     }
+    // Close path after drawing gauge bar
+    ctx.closePath();
 
-    //Create title labels above gauge
-    ctx.font = "14px Arial";
-    ctx.fillStyle = "#000";
-    // ctx.fillText("Scrubs Per Week", gaugeX - 55, gaugeY - gaugeRadius - 20);
-    ctx.font = "18px Arial";
-    ctx.fillStyle = "#000";
-    // ctx.fillText("Belly Button Washing Frequency", gaugeX - 125, gaugeY - gaugeRadius - 40);
-
-
+    //--------------------------------
     //Draw and Rotate Needle
     // The Needle will be a triangle
     // Here are the coordinates for the base of the triangle in terms of the gauge location where
@@ -57,6 +52,15 @@ function plotPersonsGaugeWashFrequency(person_index1){
     let y1 = gaugeY;
     let x2 = gaugeX + 5;
     let y2 = gaugeY;
+    let needleColor = "#700";
+
+    // Needle Base
+    ctx.beginPath();
+    ctx.arc(gaugeX, gaugeY, 10, 0, 2 * Math.PI);
+    ctx.fillStyle = needleColor;
+    ctx.fill();
+    ctx.closePath();
+
 
     // Midpoint of the base
     let midX = (x1 + x2) / 2;
@@ -83,11 +87,26 @@ function plotPersonsGaugeWashFrequency(person_index1){
     ctx.closePath();
 
     // Fill triangle
-    ctx.fillStyle = "#700";
+    ctx.fillStyle = needleColor;
     ctx.fill();
 
     // Reset rotation and translation for later use
     ctx.rotate(-angleToRotate);
     ctx.translate(-midX, -midY);
+
+    // Needle Gasket
+    ctx.beginPath();
+    ctx.arc(gaugeX, gaugeY, 5, 0, 2 * Math.PI);
+    ctx.fillStyle = "#000";
+    ctx.fill();
+    ctx.closePath();
+
+    // Needle Crown on top of needle gasket
+    ctx.beginPath();
+    ctx.arc(gaugeX, gaugeY, 4, 0, 2 * Math.PI);
+    ctx.fillStyle = needleColor;
+    ctx.fill();
+    ctx.closePath();
+
 
 }

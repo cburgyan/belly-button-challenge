@@ -28,6 +28,7 @@ function plotPersonsBarData(person_id, sortedOTUsBySampleValue){
         width: .8
     };
 
+    // Layout for the bar chart
     let layout ={
         title: `${person_id}'s Operational Taxonomic Units (OTUs) Profile`,
         width: 450,
@@ -43,6 +44,7 @@ function plotPersonsBarData(person_id, sortedOTUsBySampleValue){
         },
     };
 
+    // Plotting the bar chart
     Plotly.newPlot('bar', [trace], layout);
 
 }
@@ -72,6 +74,7 @@ function plotPersonsBubbleChart(person_id, sortedOTUsBySampleValue){
         }
     };
 
+    // Layout for bubble chart
     let layout ={
         title: `${person_id}'s Operational Taxonomic Units (OTUs) Profile`,
         xaxis: {
@@ -86,13 +89,10 @@ function plotPersonsBubbleChart(person_id, sortedOTUsBySampleValue){
         },
     };
 
+    // Ploting the bubble chart
     Plotly.newPlot('bubble', [trace], layout);
 
 }
-
-
-
-
 
 
 // Function to pack up each OTU's id (an element of 'otu_ids'), sample value (an element of 
@@ -117,6 +117,9 @@ function bindSampleValues_Otu_ids_Otu_labels(sample_values, otu_ids, otu_labels)
 // Function to reestablish array structures for the sample values (into 'sample_values'), 
 // the uto ids (into 'uto_ids'), and the uto labels (into 'uto_labels') for the purpose of
 // using those arrays as the x values, y values, and text values in the bar chart to come.
+// This function returns a dictionary of the lists "sample_values", "otu_ids", and 
+// "otu_labels" where an index q in each list corresponds to the different associations
+// of that particular OTU (-- assuming 0 <= q < sample_values.length).
 function unbindUTORecords(sortedListOfDicts){
     let sample_values = [];
     let otu_ids = [];
@@ -189,13 +192,14 @@ dataPromise.then(function(data1){
     // .json(url) result ('dataPromise').
     data = structuredClone(data1);
 
-    // // Quick printout-sanity-check
+    // Quick printout-sanity-check
     console.log(data1);
-    // console.log(`data.names for 100th person: ${data1.names[100]}`);
-    // console.log(`data.samples for 100th person: ${data1.samples[100].otu_labels[0]}`);
-    // console.log(`data.metadata for 100th person: ${data1.metadata[100].age}`);
 
 
+    // Function to 1) insert html tags for the the "Test Subject ID No.:" dropdown menu, "Demographic Info" div, 
+    // and the "gauge" div and 2) populate those newly inserted tags along with the "bar" and "bubble" divs with
+    // the data corresponding to the initial default person's OTU and metadata (the default person being the
+    // one listed first in the "Test Subject ID No." dropdown menu).
     function initialize(){
     
         // Populate the the html Select Tag for the dropdown menu with person_ids as
@@ -209,10 +213,10 @@ dataPromise.then(function(data1){
 
         // Populate 'Demographic Info' for first time including creation and insertion of
         // the html tags that will contain the populating info. And give the newly inserted
-        // html tags unique ids to be referred to later in when the 'Demographic Info' needs
-        // to be updated (the 'Demographic Info' is simple the initial person in the data
-        // that corresponds to person_index zero of the dropdown menu (which is currently 
-        // person_id equal to '940')).
+        // html tags unique ids to be referred to later when the 'Demographic Info' needs
+        // to be updated (the 'Demographic Info' is initially populated with the "id",
+        // "ethnicity", "gender", "age", "location", "bbtype", and "wfreq" of the first
+        // person listed in the dropdown menu labeled "Test Subject ID No.:").
         let demographicDiv = d3.select('#sample-metadata');
         let idDemo = demographicDiv.append('p').text(`id: ${data1.names[0]}`);
         idDemo.attr('id','demoId');
@@ -232,22 +236,26 @@ dataPromise.then(function(data1){
 
         // Create canvas html tag to draw gauge on (NOTE: Plotly was NOT used for this gauge)
         let gaugeDiv = d3.select('#gauge')
-        let centerTag = gaugeDiv.append('center');
-        centerTag.attr('style', "margin-left: 100px;");
-        let titleTag1 = centerTag.append('p');
-        titleTag1.attr('id', 'gaugeTitle');
-        titleTag1.attr('style', "font-size: 18px; text-align:center; position: relative; top: 50px; margin-bottom: 0px;");
-        titleTag1.text('Belly Button Washing Frequency');
+        let centerGaugeComponentsTag = gaugeDiv.append('center');
+        centerGaugeComponentsTag.attr('style', "margin-left: 100px;");
 
-        let titleTag2 = centerTag.append('p');
-        titleTag2.attr('id', 'gaugeTitle');
-        titleTag2.attr('style', "font-size: 14px; text-align:center; position: relative; top: 50px;");
-        titleTag2.text('Scrubs Per Week');
+        // Add a paragraph tag to hold the main title for the gauge
+        let gaugeTitleTag = centerGaugeComponentsTag.append('p');
+        gaugeTitleTag.attr('id', 'gaugeTitle');
+        gaugeTitleTag.attr('style', "font-size: 18px; text-align:center; position: relative; top: 50px; margin-bottom: 0px;");
+        gaugeTitleTag.text('Belly Button Washing Frequency');
+
+        // Add a paragraph tag to hold the subtitle for the gauge
+        let guageSubtitleTag = centerGaugeComponentsTag.append('p');
+        guageSubtitleTag.attr('id', 'gaugeTitle');
+        guageSubtitleTag.attr('style', "font-size: 14px; text-align:center; position: relative; top: 50px;");
+        guageSubtitleTag.text('Scrubs Per Week');
         
-        let canvasTag = centerTag.append('canvas');
-        canvasTag.attr('id', 'gaugeCanvas');
-        canvasTag.attr('width', '300');
-        canvasTag.attr('height','300');
+        // Add a canvas tag to draw the gauge and its needle upon
+        let gaugeCanvasTag = centerGaugeComponentsTag.append('canvas');
+        gaugeCanvasTag.attr('id', 'gaugeCanvas');
+        gaugeCanvasTag.attr('width', '300');
+        gaugeCanvasTag.attr('height','300');
 
 
         // Create initial bar chart and bubble chart for the initially listed person id in the
@@ -266,6 +274,9 @@ dataPromise.then(function(data1){
 
     }
 
+    
+    // The Function initialize() is called to setup and populate the "Test Subject ID No.:" menu,
+    // the "Demographic Info" div, "bar" div, "gauge" div, and the "bubble" div.
     initialize();
 });
 
