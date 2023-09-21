@@ -19,7 +19,7 @@ By exploring these test subjects' data, it can be seen that there is no one patt
                 Used in app.js line 194 here: <br><br>
         <ul>
             <li>
-                <img src='./images/structuredClone_appjs_myCodae.png'>
+                <img src='./images/structuredClone_appjs_myCode.png'>
 <br>
             </li>
         </ul>
