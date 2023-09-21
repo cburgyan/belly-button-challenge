@@ -1,3 +1,4 @@
+// Belly Button Biodiversity Dashboard -- An Essential File (app.js)
 
 // URL to retrieve OTU data
 const url = 'https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json';
@@ -274,7 +275,7 @@ dataPromise.then(function(data1){
 
     }
 
-    
+
     // The Function initialize() is called to setup and populate the "Test Subject ID No.:" menu,
     // the "Demographic Info" div, "bar" div, "gauge" div, and the "bubble" div.
     initialize();

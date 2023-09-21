@@ -1,3 +1,8 @@
+// Belly Button Biodiversity Dashboard -- An Essential File (bonus.js)
+
+
+// Function to create a gauge displaying the wash frequency of a person corresponding
+// to the function argument value 'person_index1'
 function plotPersonsGaugeWashFrequency(person_index1){
     //Get wash frequency from data
     let washFrequency = data.metadata[person_index1].wfreq;
