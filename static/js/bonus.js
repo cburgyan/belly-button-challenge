@@ -5,9 +5,9 @@ function plotPersonsGaugeWashFrequency(person_index1){
     // Draw gauge WITHOUT needle (drawing the needle comes later)
     // Set constant values for defining gauge such as location, radians per step, angle offsets,
     // rgb color variations, and number of steps (9) that will be in gauge.
-    const gaugeX = 220;
-    const gaugeY = 200;
-    const gaugeRadius = 70;
+    const gaugeX = 150;
+    const gaugeY = 190;
+    const gaugeRadius = 110;
     const numberOfSteps = 9;
     const radiansPerStep = Math.PI / numberOfSteps;
     const angleOffset = radiansPerStep / 2;
@@ -23,27 +23,30 @@ function plotPersonsGaugeWashFrequency(person_index1){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw Gauge without needle
-    const labelShift = -6;
+    const labelShiftX = -8;
+    const labelShiftY = 5;
     for (let i = 0; i < numberOfSteps; i++){
         ctx.beginPath();
         ctx.arc(gaugeX, gaugeY, gaugeRadius,  Math.PI + i * radiansPerStep, Math.PI + (i + 1) * radiansPerStep);
-        ctx.lineWidth = 35;
+        ctx.lineWidth = 60;
         ctx.strokeStyle = `#${colorHexRedList[i]}${colorHexGreenList[i]}${colorHexBlueList[i]}`;
         ctx.stroke();
         
         // Create labels on gauge
-        ctx.font = "8px Arial";
+        ctx.font = "14px Arial";
         ctx.fillStyle = "#000";
-        ctx.fillText(`${i}-${i+1}`,(gaugeX + labelShift) + gaugeRadius * Math.cos(Math.PI + i * radiansPerStep + angleOffset),gaugeY +  gaugeRadius*Math.sin(Math.PI + i * radiansPerStep + angleOffset));
+        ctx.fillText(`${i}-${i+1}`,
+            (gaugeX + labelShiftX) + gaugeRadius * Math.cos(Math.PI + i * radiansPerStep + angleOffset), 
+            (gaugeY + labelShiftY) +  gaugeRadius*Math.sin(Math.PI + i * radiansPerStep + angleOffset));
     }
 
     //Create title labels above gauge
     ctx.font = "14px Arial";
     ctx.fillStyle = "#000";
-    ctx.fillText("Scrubs Per Week", gaugeX - 55, gaugeY - gaugeRadius - 20);
+    // ctx.fillText("Scrubs Per Week", gaugeX - 55, gaugeY - gaugeRadius - 20);
     ctx.font = "18px Arial";
     ctx.fillStyle = "#000";
-    ctx.fillText("Belly Button Washing Frequency", gaugeX - 125, gaugeY - gaugeRadius - 40);
+    // ctx.fillText("Belly Button Washing Frequency", gaugeX - 125, gaugeY - gaugeRadius - 40);
 
 
     //Draw and Rotate Needle

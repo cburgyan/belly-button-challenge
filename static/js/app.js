@@ -232,10 +232,22 @@ dataPromise.then(function(data1){
 
         // Create canvas html tag to draw gauge on (NOTE: Plotly was NOT used for this gauge)
         let gaugeDiv = d3.select('#gauge')
-        let canvasTag = gaugeDiv.append('canvas');
+        let centerTag = gaugeDiv.append('center');
+        centerTag.attr('style', "margin-left: 100px;");
+        let titleTag1 = centerTag.append('p');
+        titleTag1.attr('id', 'gaugeTitle');
+        titleTag1.attr('style', "font-size: 18px; text-align:center; position: relative; top: 50px; margin-bottom: 0px;");
+        titleTag1.text('Belly Button Washing Frequency');
+
+        let titleTag2 = centerTag.append('p');
+        titleTag2.attr('id', 'gaugeTitle');
+        titleTag2.attr('style', "font-size: 14px; text-align:center; position: relative; top: 50px;");
+        titleTag2.text('Scrubs Per Week');
+        
+        let canvasTag = centerTag.append('canvas');
         canvasTag.attr('id', 'gaugeCanvas');
-        canvasTag.attr('width', '400');
-        canvasTag.attr('height','200');
+        canvasTag.attr('width', '300');
+        canvasTag.attr('height','300');
 
 
         // Create initial bar chart and bubble chart for the initially listed person id in the
