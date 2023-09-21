@@ -4,7 +4,7 @@
 ---
 ### A Dashboard Overview For Test Subjects
 In this project an interactive dashboard was created to "explore the Belly Button Biodiversity" via a bar chart showing a test subject's top ten most populous Operational Taxonomic Units (OTUs (-- microbes)), a bubble chart showing all the populations present in his/her navel, along with some of his/her demographic data, and bathing frequency.<br>
-By exploring this test subjects' data, it can be seen that their is no one pattern that the distributions follow and there are likely a multiplicity of factors that cause these variations.
+By exploring this test subjects' data, it can be seen that their is no one pattern that the OTU distributions follow and there are likely a multiplicity of factors that cause the variations observed.
 
 #### <a href='https://cburgyan.github.io/belly-button-challenge/'>Click Here the Github Page</a>
 ---
